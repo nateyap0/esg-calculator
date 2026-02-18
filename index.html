@@ -12,7 +12,7 @@ body{font-family:-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg)
 h1{font-size:1.5rem;margin-bottom:16px;font-weight:700}
 .srow{display:flex;gap:16px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
 .sg{display:flex;align-items:center;gap:6px}
-.sg label{font-size:.82rem;color:var(--text-dim);white-space:nowrap}
+.sg label{font-size:.82rem;color:var(--text-dim);white-space:nowrap;min-width:54px}
 .bg{display:flex;gap:2px}
 .bg button{padding:4px 10px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;font-size:.82rem;border-radius:4px;font-family:inherit}
 .bg button.act{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -29,7 +29,8 @@ h1{font-size:1.5rem;margin-bottom:16px;font-weight:700}
   display:flex;align-items:center;justify-content:center;flex-direction:column;
   transition:all .15s;background:transparent;
 }
-.card-slot.filled{background:var(--card-bg);border:2px solid var(--card-border)}
+.card-slot.filled{background:var(--card-bg);border:2px solid var(--card-border);cursor:pointer}
+.card-slot.filled:hover{border-color:var(--red);opacity:.8}
 .card-slot.filled .card-rank{font-size:1.15em;font-weight:700;font-family:'Courier New',monospace;line-height:1}
 .card-slot.filled .card-suit{font-size:1.05em;line-height:1}
 .card-slot.filled.suit-red{color:var(--red)}
@@ -38,22 +39,27 @@ h1{font-size:1.5rem;margin-bottom:16px;font-weight:700}
 .tcnt{color:var(--text-dim);font-size:.78rem;white-space:nowrap}
 .xbtn{padding:4px 9px;background:none;border:1px solid var(--border);color:var(--text-dim);border-radius:4px;cursor:pointer;font-size:.95rem;font-family:inherit;line-height:1;align-self:center;margin-left:6px}
 .xbtn:hover{background:#da363333;border-color:#f85149;color:#f85149}
+.rndbtn{padding:4px 9px;background:none;border:1px solid var(--border);color:var(--text-dim);border-radius:4px;cursor:pointer;font-size:.78rem;font-family:inherit;line-height:1;align-self:center;margin-left:2px}
+.rndbtn:hover{background:#1f6feb33;border-color:var(--accent);color:var(--accent)}
 .picker-grid{display:grid;grid-template-columns:repeat(13,1fr);gap:3px;margin-bottom:14px}
 .picker-card{
   aspect-ratio:0.72;border-radius:5px;display:flex;align-items:center;justify-content:center;
   flex-direction:column;cursor:pointer;transition:all .12s;font-family:'Courier New',monospace;
   background:var(--card-bg);border:2px solid transparent;font-size:.88em;line-height:1.15;
 }
-.picker-card:hover:not(.s0):not(.s1):not(.s2):not(.s3):not(.s4){border-color:var(--accent);transform:scale(1.08);z-index:1}
+.picker-card:hover:not(.s0):not(.s1):not(.s2):not(.s3):not(.s4):not(.s5):not(.s6){border-color:var(--accent);transform:scale(1.08);z-index:1}
 .picker-card .p-rank{font-weight:700;font-size:1.2em}
 .picker-card .p-suit{font-size:1.15em}
 .picker-card.suit-red{color:var(--red)}
 .picker-card.suit-black{color:#1a1a2e}
-.picker-card.s0{border-color:#58a6ff;box-shadow:0 0 6px rgba(88,166,255,.4)}
-.picker-card.s1{border-color:#f97583;box-shadow:0 0 6px rgba(249,117,131,.4)}
-.picker-card.s2{border-color:#56d364;box-shadow:0 0 6px rgba(86,211,100,.4)}
-.picker-card.s3{border-color:#d2a8ff;box-shadow:0 0 6px rgba(210,168,255,.4)}
-.picker-card.s4{border-color:#f0883e;box-shadow:0 0 6px rgba(240,136,62,.4)}
+.picker-card.s0,.picker-card.s1,.picker-card.s2,.picker-card.s3,.picker-card.s4,.picker-card.s5,.picker-card.s6{opacity:.35;cursor:default}
+.picker-card.s0{background:#58a6ff30;border-color:#58a6ff}
+.picker-card.s1{background:#f9758330;border-color:#f97583}
+.picker-card.s2{background:#56d36430;border-color:#56d364}
+.picker-card.s3{background:#d2a8ff30;border-color:#d2a8ff}
+.picker-card.s4{background:#f0883e30;border-color:#f0883e}
+.picker-card.s5{background:#e3b34130;border-color:#e3b341}
+.picker-card.s6{background:#79c0ff30;border-color:#79c0ff}
 .ctrls{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
 .rbtn{padding:9px 22px;border:1px solid #2ea043;background:#238636;color:#fff;font-size:.95rem;font-weight:600;border-radius:6px;cursor:pointer;font-family:inherit}
 .rbtn:hover{background:#2ea043}.rbtn:disabled{opacity:.4;cursor:not-allowed}
@@ -86,26 +92,24 @@ tr:last-child td{border-bottom:none}
 <div id="app">
 <h1>ESG Equity Calculator</h1>
 <div class="srow">
-  <div class="sg"><label>Players</label><div class="bg" id="bPlayers">
-    <button data-v="2" class="act">2</button><button data-v="3">3</button>
-  </div></div>
-  <div class="sg"><label>Starting</label><div class="bg" id="bCards">
-    <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button><button data-v="6" class="act">6</button><button data-v="7">7</button><button data-v="8">8</button>
-  </div></div>
   <div class="sg"><label>Trials</label><div class="bg" id="bTrials">
     <button data-v="10000">10K</button><button data-v="50000" class="act">50K</button>
     <button data-v="100000">100K</button><button data-v="250000">250K</button>
   </div></div>
 </div>
 <div class="srow">
-  <div class="sg"><label>Flop</label><div class="bg" id="bFlop">
-    <button data-v="1">1</button><button data-v="2">2</button><button data-v="3" class="act">3</button><button data-v="4">4</button>
+  <div class="sg"><label>Players</label><div class="bg" id="bPlayers">
+    <button data-v="2" class="act">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button>
   </div></div>
-  <div class="sg"><label>Turn</label><div class="bg" id="bTurn">
-    <button data-v="1">1</button><button data-v="2">2</button><button data-v="3" class="act">3</button><button data-v="4">4</button>
+</div>
+<div class="srow">
+  <div class="sg"><label>Starting</label><div class="bg" id="bCards">
+    <button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button><button data-v="6" class="act">6</button><button data-v="7">7</button><button data-v="8">8</button><button data-v="9">9</button><button data-v="10">10</button><button data-v="11">11</button><button data-v="12">12</button><button data-v="13">13</button><button data-v="14">14</button>
   </div></div>
-  <div class="sg"><label>River</label><div class="bg" id="bRiver">
-    <button data-v="1">1</button><button data-v="2">2</button><button data-v="3" class="act">3</button><button data-v="4">4</button>
+</div>
+<div class="srow">
+  <div class="sg"><label>Draws</label><div class="bg" id="bDraws">
+    <button data-v="0">0</button><button data-v="1">1</button><button data-v="2">2</button><button data-v="3">3</button><button data-v="4">4</button><button data-v="5">5</button><button data-v="6">6</button><button data-v="7">7</button><button data-v="8">8</button><button data-v="9" class="act">9</button><button data-v="10">10</button><button data-v="11">11</button><button data-v="12">12</button><button data-v="13">13</button><button data-v="14">14</button><button data-v="15">15</button>
   </div></div>
 </div>
 <div class="err" id="err"></div>
@@ -115,6 +119,7 @@ tr:last-child td{border-bottom:none}
 <div class="info">PLO rules: must use exactly 2 from hand + 3 from board. Hand point: best 5-card hand from hole cards only.</div>
 <div class="ctrls">
   <button id="runBtn" class="rbtn" disabled>Run</button>
+  <button id="rndAllBtn" class="cbtn">Random All</button>
   <button id="clrBtn" class="cbtn">Clear All</button>
   <div class="prog" id="progressArea"><div class="pbar"><div class="pfill" id="pfill"></div></div><div class="ptxt" id="ptxt"></div></div>
 </div>
@@ -128,15 +133,15 @@ const RANK_IDX=[12,0,1,2,3,4,5,6,7,8,9,10,11];
 const RCHAR='23456789TJQKA';
 const SUIT='♠♥♦♣';
 const SCLS=[1,0,0,1];
-// Colors: P1 blue, P2 red, P3 green, B1 purple, B2 orange
-const TCOL=['#58a6ff','#f97583','#56d364','#d2a8ff','#f0883e'];
-const TNAME=['Player 1','Player 2','Player 3','Board 1','Board 2'];
+// Colors: P1 blue, P2 red, P3 green, P4 purple, P5 orange, B1 gold, B2 cyan
+const TCOL=['#58a6ff','#f97583','#56d364','#d2a8ff','#f0883e','#e3b341','#79c0ff'];
+const TNAME=['Player 1','Player 2','Player 3','Player 4','Player 5','Board 1','Board 2'];
 
-let nP=2,nC=6,dF=3,dT=3,dR=3,nT=50000;
-let aT=0; // active target: 0-2 players, 3-4 boards
-let pCards=[[],[],[]]; // player hands
+let nP=2,nC=6,nD=9,nT=50000;
+let aT=0; // active target: 0-4 players, 5-6 boards
+let pCards=[[],[],[],[],[]]; // player hands
 let bCards=[[],[]]; // board cards (up to 5 each)
-let assign=new Int8Array(52).fill(-1); // card -> target (-1=free, 0-2=player, 3-4=board)
+let assign=new Int8Array(52).fill(-1); // card -> target (-1=free, 0-4=player, 5-6=board)
 let worker=null,running=false;
 
 function cardName(c){return RCHAR[c>>2]+SUIT[c&3]}
@@ -154,39 +159,32 @@ function initBg(id,cb){
 }
 initBg('bPlayers',v=>{nP=v;onCfg()});
 initBg('bCards',v=>{nC=v;onCfg()});
-initBg('bFlop',v=>{dF=v;render()});
-initBg('bTurn',v=>{dT=v;render()});
-initBg('bRiver',v=>{dR=v;render()});
+initBg('bDraws',v=>{nD=v;render()});
 initBg('bTrials',v=>{nT=v});
 
 function tableSize(){return Math.max(nP,Math.min(7,Math.floor(42/nC)))}
 
-function calcDrawSchedule(){
+function actualDraws(){
   const muck=(tableSize()-nP)*nC;
-  let left=muck;
-  const f=Math.min(dF,Math.floor(left/nP));left-=f*nP;
-  const t=Math.min(dT,Math.floor(left/nP));left-=t*nP;
-  const r=Math.min(dR,Math.floor(left/nP));left-=r*nP;
-  return [f,t,r];
+  return Math.min(nD,Math.floor(muck/nP));
 }
 function finalHandSize(){
-  const s=calcDrawSchedule();
-  return nC+s[0]+s[1]+s[2];
+  return nC+actualDraws();
 }
 
-function maxCards(t){return t<3?nC:5}
+function maxCards(t){return t<5?nC:5}
 
-function getCards(t){return t<3?pCards[t]:bCards[t-3]}
+function getCards(t){return t<5?pCards[t]:bCards[t-5]}
 
-function setCards(t,arr){if(t<3)pCards[t]=arr;else bCards[t-3]=arr;}
+function setCards(t,arr){if(t<5)pCards[t]=arr;else bCards[t-5]=arr;}
 
 function onCfg(){
   // trim player hands if starting cards reduced
-  for(let p=0;p<3;p++){
+  for(let p=0;p<5;p++){
     if(p>=nP){pCards[p].forEach(c=>assign[c]=-1);pCards[p]=[];}
     else while(pCards[p].length>nC){assign[pCards[p].pop()]=-1;}
   }
-  if(aT<3&&aT>=nP)aT=0;
+  if(aT<5&&aT>=nP)aT=0;
   validate();render();
 }
 
@@ -238,6 +236,30 @@ function clearTarget(t){
   validate();render();
 }
 
+function randomFill(t){
+  const cards=getCards(t);
+  const max=maxCards(t);
+  if(cards.length>=max)return;
+  const avail=[];
+  for(let c=0;c<52;c++)if(assign[c]===-1)avail.push(c);
+  for(let i=avail.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));const tmp=avail[i];avail[i]=avail[j];avail[j]=tmp;}
+  const need=max-cards.length;
+  for(let i=0;i<Math.min(need,avail.length);i++){assign[avail[i]]=t;cards.push(avail[i]);}
+}
+
+function randomTarget(t){
+  if(running)return;
+  randomFill(t);
+  validate();render();
+}
+
+function randomAll(){
+  if(running)return;
+  for(let p=0;p<nP;p++)randomFill(p);
+  randomFill(5);randomFill(6);
+  validate();render();
+}
+
 function render(){
   const container=document.getElementById('trows');
   container.innerHTML='';
@@ -245,7 +267,7 @@ function render(){
   // determine which targets to show
   const targets=[];
   for(let p=0;p<nP;p++)targets.push(p);
-  targets.push(3,4);
+  targets.push(5,6);
 
   for(const t of targets){
     const row=document.createElement('div');
@@ -254,7 +276,7 @@ function render(){
 
     // clicking the row (not the clear btn) sets active target
     row.addEventListener('click',e=>{
-      if(e.target.closest('.xbtn'))return;
+      if(e.target.closest('.xbtn')||e.target.closest('.rndbtn'))return;
       aT=t;render();
     });
 
@@ -271,7 +293,7 @@ function render(){
     const cards=getCards(t);
     const max=maxCards(t);
 
-    if(t>=3){
+    if(t>=5){
       // board: show with flop/turn/river grouping
       for(let i=0;i<5;i++){
         if(i===3||i===4){
@@ -284,6 +306,7 @@ function render(){
           const c=cards[i];
           slot.className='card-slot filled'+((c&3)===1||(c&3)===2?' suit-red':' suit-black');
           slot.innerHTML=`<span class="card-rank">${RCHAR[c>>2]}</span><span class="card-suit">${SUIT[c&3]}</span>`;
+          slot.addEventListener('click',e=>{e.stopPropagation();if(running)return;assign[c]=-1;setCards(t,getCards(t).filter(x=>x!==c));validate();render();});
         }else{
           slot.className='card-slot';
           slot.innerHTML='<span style="font-size:1.1em;color:var(--text-dim)">+</span>';
@@ -298,6 +321,7 @@ function render(){
           const c=cards[i];
           slot.className='card-slot filled'+((c&3)===1||(c&3)===2?' suit-red':' suit-black');
           slot.innerHTML=`<span class="card-rank">${RCHAR[c>>2]}</span><span class="card-suit">${SUIT[c&3]}</span>`;
+          slot.addEventListener('click',e=>{e.stopPropagation();if(running)return;assign[c]=-1;setCards(t,getCards(t).filter(x=>x!==c));validate();render();});
         }else{
           slot.className='card-slot';
           slot.innerHTML='<span style="font-size:1.1em;color:var(--text-dim)">+</span>';
@@ -305,7 +329,14 @@ function render(){
         cardsDiv.appendChild(slot);
       }
     }
-    // clear button inside card-slots, right after last card
+    // random + clear buttons inside card-slots
+    if(cards.length<max){
+      const rb=document.createElement('button');
+      rb.className='rndbtn';
+      rb.textContent='Rnd';
+      rb.addEventListener('click',e=>{e.stopPropagation();randomTarget(t);});
+      cardsDiv.appendChild(rb);
+    }
     if(cards.length>0){
       const xb=document.createElement('button');
       xb.className='xbtn';
@@ -332,17 +363,18 @@ function render(){
   });
 
   // info line
-  const sched=calcDrawSchedule();
+  const ad=actualDraws();
   const fs=finalHandSize();
   const ts=tableSize();
   const muck=(ts-nP)*nC;
   document.getElementById('hdinfo').textContent=
-    `Table: ${ts} dealt | Muck: ${muck} cards | Draws: ${sched[0]}/${sched[1]}/${sched[2]} per player | Final hand: ${fs} cards`;
+    `Table: ${ts} dealt | Muck: ${muck} cards | Draws: ${ad} per player | Final hand: ${fs} cards`;
 }
 
+document.getElementById('rndAllBtn').addEventListener('click',()=>randomAll());
 document.getElementById('clrBtn').addEventListener('click',()=>{
   if(running)return;
-  for(let p=0;p<3;p++){pCards[p].forEach(c=>assign[c]=-1);pCards[p]=[];}
+  for(let p=0;p<5;p++){pCards[p].forEach(c=>assign[c]=-1);pCards[p]=[];}
   for(let b=0;b<2;b++){bCards[b].forEach(c=>assign[c]=-1);bCards[b]=[];}
   document.getElementById('resultsArea').style.display='none';
   document.getElementById('progressArea').style.display='none';
@@ -366,11 +398,11 @@ function startSim(){
   const url=URL.createObjectURL(blob);
   worker=new Worker(url);URL.revokeObjectURL(url);
 
-  const sched=calcDrawSchedule();
-  document.getElementById('ptxt').textContent=`0 / ${nT.toLocaleString()} — draws: ${sched[0]}/${sched[1]}/${sched[2]}, final: ${finalHandSize()} cards`;
+  const ad=actualDraws();
+  document.getElementById('ptxt').textContent=`0 / ${nT.toLocaleString()} — draws: ${ad}, final: ${finalHandSize()} cards`;
   worker.postMessage({
     playerHands:hands,numPlayers:nP,startingCards:nC,
-    drawFlop:dF,drawTurn:dT,drawRiver:dR,tableSize:tableSize(),numTrials:nT,
+    totalDraws:ad,numTrials:nT,
     knownBoard1:[...bCards[0]],knownBoard2:[...bCards[1]]
   });
   worker.onmessage=e=>{
@@ -520,19 +552,9 @@ function bestPLO(hand,n,board){
 buildRankTable();
 
 onmessage=function(e){
-  const{playerHands,numPlayers,startingCards,drawFlop,drawTurn,drawRiver,tableSize,numTrials,knownBoard1,knownBoard2}=e.data;
+  const{playerHands,numPlayers,startingCards,totalDraws,numTrials,knownBoard1,knownBoard2}=e.data;
 
-  // draw schedule
-  const muckSize=(tableSize-numPlayers)*startingCards;
-  let muckLeft=muckSize;
-  const reqDraws=[drawFlop,drawTurn,drawRiver];
-  const drawSched=[0,0,0];
-  for(let st=0;st<3;st++){
-    const d=Math.min(reqDraws[st],Math.floor(muckLeft/numPlayers));
-    drawSched[st]=d;
-    muckLeft-=d*numPlayers;
-  }
-  const totalDrawsPerPlayer=drawSched[0]+drawSched[1]+drawSched[2];
+  const totalDrawsPerPlayer=totalDraws;
   const fullSize=startingCards+totalDrawsPerPlayer;
 
   const kb1=knownBoard1||[];
