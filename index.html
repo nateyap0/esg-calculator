@@ -91,7 +91,7 @@ tr:last-child td{border-bottom:none}
 .subscribe-prompt ul{text-align:left;display:block;list-style:none;margin:0 auto 18px;padding:0;font-size:.85rem;width:fit-content}
 .subscribe-prompt ul li{padding:4px 0;color:var(--text-dim)}
 .subscribe-prompt ul li::before{content:'\2713 ';color:#3fb950;font-weight:700;margin-right:6px}
-.btn-subscribe{background:#635bff;color:#fff;padding:10px 24px;border:none;border-radius:6px;cursor:pointer;font-size:.95rem;font-weight:600;transition:background .15s}
+.btn-subscribe{display:block;margin:16px auto 0;background:#635bff;color:#fff;padding:10px 24px;border:none;border-radius:6px;cursor:pointer;font-size:.95rem;font-weight:600;transition:background .15s}
 .btn-subscribe:hover{background:#7a73ff}
 .auth-notice{text-align:center;padding:12px 16px;background:#1c2333;border:1px solid var(--border);border-radius:6px;margin-bottom:14px;font-size:.85rem;color:var(--text-dim)}
 .auth-notice a{color:#58a6ff;cursor:pointer;text-decoration:underline}
@@ -111,12 +111,11 @@ tr:last-child td{border-bottom:none}
 </head>
 <body>
 
+<div id="app">
 <div class="auth-bar" id="auth-bar">
   <div id="auth-signed-out"><div id="g_id_onload" data-client_id="411313261288-voso2pnj4v97bk80klmacq15tvqj5hqv.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div><div class="g_id_signin" data-type="standard" data-size="medium" data-theme="filled_black" data-text="signin_with" data-shape="rectangular"></div></div>
   <div id="auth-signed-in" style="display:none" class="user-info"><img id="auth-pic" src="" alt=""><span id="auth-name"></span><button id="manage-sub-btn" class="manage-link" onclick="manageSubscription()" style="display:none">Manage Subscription</button><button class="sign-out" onclick="signOut()">Sign out</button></div>
 </div>
-
-<div id="app">
 <h1>ESG Equity Calculator</h1>
 <div class="srow">
   <div class="sg"><label>Trials</label><div class="bg" id="bTrials">
