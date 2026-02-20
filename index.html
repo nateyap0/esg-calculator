@@ -215,10 +215,12 @@ function updateNotice(){
     if(!running) btn.textContent='Sign in to Run';
   }else if(!isSubscribed){
     el.style.display='block';
-    el.innerHTML='Subscription required \u2014 SGD$39/mo. Click Run to subscribe.';
+    el.innerHTML='Subscription required to run simulations.';
     if(!running) btn.textContent='Run';
+    document.getElementById('subscribePrompt').style.display='block';
   }else{
     el.style.display='none';
+    document.getElementById('subscribePrompt').style.display='none';
     if(!running) btn.textContent='Run';
   }
 }
@@ -243,7 +245,6 @@ function ensureValidToken() {
   return true;
 }
 
-// TODO: Replace with your actual Stripe Payment Link URL for ESG
 function subscribe() {
   const email = authUser ? authUser.email : '';
   let url = 'https://buy.stripe.com/7sY7sM4ygd718fRa650Ba01';
@@ -251,7 +252,6 @@ function subscribe() {
   window.location.href = url;
 }
 
-// TODO: Replace with your actual Stripe Customer Portal URL
 function manageSubscription() {
   window.open('https://billing.stripe.com/p/login/8x214o7Ks9UPanZced0Ba00', '_blank');
 }
