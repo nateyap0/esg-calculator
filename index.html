@@ -13,6 +13,7 @@ h1{font-size:1.5rem;margin-bottom:16px;font-weight:700}
 .srow{display:flex;gap:16px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
 .sg{display:flex;align-items:center;gap:6px}
 .sg label{font-size:.82rem;color:var(--text-dim);white-space:nowrap;min-width:54px}
+.hint{font-size:.72rem;color:#484f58;white-space:nowrap;margin-left:6px}
 .bg{display:flex;gap:2px}
 .bg button{padding:4px 10px;border:1px solid var(--border);background:var(--panel);color:var(--text);cursor:pointer;font-size:.82rem;border-radius:4px;font-family:inherit}
 .bg button.act{background:var(--accent);border-color:var(--accent);color:#fff}
@@ -103,6 +104,7 @@ tr:last-child td{border-bottom:none}
   .picker-grid{gap:2px}
   .picker-card{font-size:.6em}
   .tl{min-width:55px;font-size:.78em}
+  h1{margin-top:48px}
   .auth-bar{position:fixed;top:6px;right:6px}
   .auth-bar .user-info{flex-direction:column;align-items:flex-end;gap:2px}
   .auth-bar .user-info .auth-links{display:flex;gap:8px}
@@ -125,7 +127,7 @@ tr:last-child td{border-bottom:none}
   <div class="sg"><label>Trials</label><div class="bg" id="bTrials">
     <button data-v="10000">10K</button><button data-v="50000" class="act">50K</button>
     <button data-v="100000">100K</button>
-  </div></div>
+  </div><span class="hint">takes a few seconds</span></div>
 </div>
 <div class="srow">
   <div class="sg"><label>Players</label><div class="bg" id="bPlayers">
