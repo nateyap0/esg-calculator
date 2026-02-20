@@ -77,7 +77,9 @@ tr:last-child td{border-bottom:none}
 #resultsArea{display:none}
 #progressArea{display:none}
 .info{font-size:.78rem;color:#484f58;margin-bottom:14px}
-.auth-bar{display:flex;align-items:center;gap:8px;justify-content:flex-end;margin-bottom:8px}
+.title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.title-row h1{margin-bottom:0}
+.auth-bar{display:flex;align-items:center;gap:8px}
 .auth-bar .user-info{display:flex;align-items:center;gap:8px;font-size:.8rem;color:#8b949e}
 .auth-bar .user-info img{width:24px;height:24px;border-radius:50%}
 .auth-bar .sign-out{color:#58a6ff;cursor:pointer;font-size:.75rem;text-decoration:underline;background:none;border:none;padding:0}
@@ -117,11 +119,13 @@ tr:last-child td{border-bottom:none}
 <body>
 
 <div id="app">
+<div class="title-row">
+<h1>ESG Solver</h1>
 <div class="auth-bar" id="auth-bar">
   <div id="auth-signed-out"><div id="g_id_onload" data-client_id="411313261288-voso2pnj4v97bk80klmacq15tvqj5hqv.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div><div class="g_id_signin" data-type="standard" data-size="medium" data-theme="filled_black" data-text="signin_with" data-shape="rectangular"></div></div>
   <div id="auth-signed-in" style="display:none" class="user-info"><img id="auth-pic" src="" alt=""><span id="auth-name"></span><div class="auth-links"><button id="manage-sub-btn" class="manage-link" onclick="manageSubscription()" style="display:none">Manage Subscription</button><button class="sign-out" onclick="signOut()">Sign out</button></div></div>
 </div>
-<h1>ESG Solver</h1>
+</div>
 <div class="srow">
   <div class="sg"><label>Trials</label><div class="bg" id="bTrials">
     <button data-v="10000">10K</button><button data-v="50000" class="act">50K</button>
