@@ -225,14 +225,14 @@ function ensureValidToken() {
 // TODO: Replace with your actual Stripe Payment Link URL for ESG
 function subscribe() {
   const email = authUser ? authUser.email : '';
-  let url = 'https://buy.stripe.com/REPLACE_WITH_ESG_PAYMENT_LINK';
+  let url = 'https://buy.stripe.com/7sY7sM4ygd718fRa650Ba01';
   if (email) url += '?prefilled_email=' + encodeURIComponent(email);
   window.location.href = url;
 }
 
 // TODO: Replace with your actual Stripe Customer Portal URL
 function manageSubscription() {
-  window.open('https://billing.stripe.com/p/login/REPLACE_WITH_PORTAL_LINK', '_blank');
+  window.open('https://billing.stripe.com/p/login/8x214o7Ks9UPanZced0Ba00', '_blank');
 }
 
 function checkPaidReturn() {
