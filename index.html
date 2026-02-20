@@ -182,6 +182,25 @@ function handleCredentialResponse(response) {
   localStorage.setItem('esg_id_token', idToken);
   localStorage.setItem('esg_auth_user', JSON.stringify(authUser));
   updateAuthUI();
+  checkSubscriptionStatus();
+}
+
+async function checkSubscriptionStatus() {
+  if (!idToken) return;
+  try {
+    const resp = await fetch('/api/check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + idToken }
+    });
+    if (resp.status === 200) {
+      isSubscribed = true;
+      localStorage.setItem('esg_subscribed', 'true');
+    } else if (resp.status === 403) {
+      isSubscribed = false;
+      localStorage.removeItem('esg_subscribed');
+    }
+  } catch {}
+  updateAuthUI();
 }
 
 function signOut() {
@@ -628,6 +647,7 @@ buildGrid();render();validate();
 updateAuthUI();
 updateNotice();
 checkPaidReturn();
+if (idToken && !isSubscribed) checkSubscriptionStatus();
 </script>
 </body>
 </html>
