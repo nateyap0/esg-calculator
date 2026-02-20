@@ -1,0 +1,8 @@
+{
+  "name": "esg-calculator",
+  "private": true,
+  "dependencies": {
+    "google-auth-library": "^9.14.0",
+    "stripe": "^14.0.0"
+  }
+}

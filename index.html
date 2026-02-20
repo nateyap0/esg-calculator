@@ -63,12 +63,9 @@ h1{font-size:1.5rem;margin-bottom:16px;font-weight:700}
 .ctrls{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
 .rbtn{padding:9px 22px;border:1px solid #2ea043;background:#238636;color:#fff;font-size:.95rem;font-weight:600;border-radius:6px;cursor:pointer;font-family:inherit}
 .rbtn:hover{background:#2ea043}.rbtn:disabled{opacity:.4;cursor:not-allowed}
-.rbtn.stop{background:#da3633;border-color:#f85149}
 .cbtn{padding:9px 16px;border:1px solid var(--border);background:#21262d;color:var(--text);font-size:.88rem;border-radius:6px;cursor:pointer;font-family:inherit}
 .cbtn:hover{background:var(--border)}
 .prog{flex:1;min-width:160px}
-.pbar{height:5px;background:#21262d;border-radius:3px;overflow:hidden;margin-bottom:3px}
-.pfill{height:100%;background:var(--accent);transition:width .3s;width:0%}
 .ptxt{font-size:.78rem;color:var(--text-dim)}
 .err{color:#f97583;font-size:.82rem;margin-bottom:10px;min-height:1.2em}
 table{width:100%;border-collapse:collapse;font-size:.95rem}
@@ -79,22 +76,50 @@ tr:last-child td{border-bottom:none}
 #resultsArea{display:none}
 #progressArea{display:none}
 .info{font-size:.78rem;color:#484f58;margin-bottom:14px}
+.auth-bar{position:fixed;top:12px;right:16px;display:flex;align-items:center;gap:8px;z-index:100}
+.auth-bar .user-info{display:flex;align-items:center;gap:8px;font-size:.8rem;color:#8b949e}
+.auth-bar .user-info img{width:24px;height:24px;border-radius:50%}
+.auth-bar .sign-out{color:#58a6ff;cursor:pointer;font-size:.75rem;text-decoration:underline;background:none;border:none;padding:0}
+.auth-bar .sign-out:hover{color:#79c0ff}
+.manage-link{font-size:.75rem;color:#58a6ff;cursor:pointer;text-decoration:underline;background:none;border:none;padding:0}
+.manage-link:hover{color:#79c0ff}
+.subscribe-prompt{text-align:center;padding:32px 20px;color:var(--text-dim);display:none}
+.subscribe-prompt h3{font-size:1.15rem;color:var(--text);margin-bottom:12px}
+.subscribe-prompt .price-tag{font-size:1.5rem;font-weight:700;color:var(--text);margin-bottom:6px}
+.subscribe-prompt .price-tag span{font-size:.85rem;font-weight:400;color:#8b949e}
+.subscribe-prompt .sub-details{font-size:.8rem;color:#8b949e;margin-bottom:16px}
+.subscribe-prompt ul{text-align:left;display:inline-block;list-style:none;margin:0 0 18px;padding:0;font-size:.85rem}
+.subscribe-prompt ul li{padding:4px 0;color:var(--text-dim)}
+.subscribe-prompt ul li::before{content:'\2713 ';color:#3fb950;font-weight:700;margin-right:6px}
+.btn-subscribe{background:#635bff;color:#fff;padding:10px 24px;border:none;border-radius:6px;cursor:pointer;font-size:.95rem;font-weight:600;transition:background .15s}
+.btn-subscribe:hover{background:#7a73ff}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid #fff3;border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
 @media(max-width:600px){
   body{padding:6px}
   .card-slot{width:38px;height:52px}
   .picker-grid{gap:2px}
   .picker-card{font-size:.6em}
   .tl{min-width:55px;font-size:.78em}
+  .auth-bar{position:static;justify-content:center;margin-bottom:8px}
+  .auth-bar .user-info{flex-wrap:wrap;justify-content:center}
 }
 </style>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
+
+<div class="auth-bar" id="auth-bar">
+  <div id="auth-signed-out"><div id="g_id_onload" data-client_id="411313261288-voso2pnj4v97bk80klmacq15tvqj5hqv.apps.googleusercontent.com" data-callback="handleCredentialResponse" data-auto_prompt="false"></div><div class="g_id_signin" data-type="standard" data-size="medium" data-theme="filled_black" data-text="signin_with" data-shape="rectangular"></div></div>
+  <div id="auth-signed-in" style="display:none" class="user-info"><img id="auth-pic" src="" alt=""><span id="auth-name"></span><button id="manage-sub-btn" class="manage-link" onclick="manageSubscription()" style="display:none">Manage Subscription</button><button class="sign-out" onclick="signOut()">Sign out</button></div>
+</div>
+
 <div id="app">
 <h1>ESG Equity Calculator</h1>
 <div class="srow">
   <div class="sg"><label>Trials</label><div class="bg" id="bTrials">
     <button data-v="10000">10K</button><button data-v="50000" class="act">50K</button>
-    <button data-v="100000">100K</button><button data-v="250000">250K</button>
+    <button data-v="100000">100K</button>
   </div></div>
 </div>
 <div class="srow">
@@ -121,17 +146,109 @@ tr:last-child td{border-bottom:none}
   <button id="runBtn" class="rbtn" disabled>Run</button>
   <button id="rndAllBtn" class="cbtn">Random All</button>
   <button id="clrBtn" class="cbtn">Clear All</button>
-  <div class="prog" id="progressArea"><div class="pbar"><div class="pfill" id="pfill"></div></div><div class="ptxt" id="ptxt"></div></div>
+  <div class="prog" id="progressArea"><div class="ptxt" id="ptxt"></div></div>
 </div>
+
+<div id="subscribePrompt" class="subscribe-prompt">
+  <h3>ESG Equity Calculator Pro</h3>
+  <div class="price-tag">SGD$39 <span>/month</span></div>
+  <div class="sub-details">Linked to your Google account &middot; Cancel anytime</div>
+  <ul>
+    <li>Monte Carlo equity simulation (up to 100K trials)</li>
+    <li>2-5 players, 1-14 starting cards, 0-15 draws</li>
+    <li>Board card input for both boards</li>
+    <li>Board 1, Board 2, Hand, Scoop &amp; Equity breakdown</li>
+  </ul>
+  <button class="btn-subscribe" id="subscribeBtn" onclick="subscribe()">Subscribe &mdash; SGD$39/mo</button>
+</div>
+
 <div id="resultsArea">
   <table><thead><tr><th></th><th>Board 1</th><th>Board 2</th><th>Hand</th><th>Scoop</th><th>Equity</th></tr></thead>
   <tbody id="rbody"></tbody></table>
 </div>
 </div>
 <script>
+// ===== AUTH + SUBSCRIPTION =====
+let idToken = localStorage.getItem('esg_id_token');
+let authUser = JSON.parse(localStorage.getItem('esg_auth_user') || 'null');
+let isSubscribed = localStorage.getItem('esg_subscribed') === 'true';
+
+function handleCredentialResponse(response) {
+  idToken = response.credential;
+  const payload = JSON.parse(atob(response.credential.split('.')[1]));
+  authUser = { name: payload.name, picture: payload.picture, email: payload.email };
+  localStorage.setItem('esg_id_token', idToken);
+  localStorage.setItem('esg_auth_user', JSON.stringify(authUser));
+  updateAuthUI();
+}
+
+function signOut() {
+  idToken = null;
+  authUser = null;
+  localStorage.removeItem('esg_id_token');
+  localStorage.removeItem('esg_auth_user');
+  google.accounts.id.disableAutoSelect();
+  updateAuthUI();
+}
+
+function updateAuthUI() {
+  const signedIn = !!idToken;
+  document.getElementById('auth-signed-out').style.display = signedIn ? 'none' : '';
+  document.getElementById('auth-signed-in').style.display = signedIn ? 'flex' : 'none';
+  if (signedIn && authUser) {
+    document.getElementById('auth-name').textContent = authUser.name;
+    document.getElementById('auth-pic').src = authUser.picture || '';
+  }
+  document.getElementById('manage-sub-btn').style.display = (signedIn && isSubscribed) ? '' : 'none';
+}
+
+function isTokenExpired() {
+  if (!idToken) return true;
+  try {
+    const payload = JSON.parse(atob(idToken.split('.')[1]));
+    return payload.exp * 1000 < Date.now();
+  } catch { return true; }
+}
+
+function ensureValidToken() {
+  if (!idToken) return false;
+  if (isTokenExpired()) {
+    idToken = null;
+    localStorage.removeItem('esg_id_token');
+    updateAuthUI();
+    google.accounts.id.prompt();
+    return false;
+  }
+  return true;
+}
+
+// TODO: Replace with your actual Stripe Payment Link URL for ESG
+function subscribe() {
+  const email = authUser ? authUser.email : '';
+  let url = 'https://buy.stripe.com/REPLACE_WITH_ESG_PAYMENT_LINK';
+  if (email) url += '?prefilled_email=' + encodeURIComponent(email);
+  window.location.href = url;
+}
+
+// TODO: Replace with your actual Stripe Customer Portal URL
+function manageSubscription() {
+  window.open('https://billing.stripe.com/p/login/REPLACE_WITH_PORTAL_LINK', '_blank');
+}
+
+function checkPaidReturn() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('paid')) {
+    window.history.replaceState({}, '', window.location.pathname);
+    isSubscribed = true;
+    localStorage.setItem('esg_subscribed', 'true');
+    updateAuthUI();
+  }
+}
+
+// ===== CARD UI =====
 const RANK_IDX=[12,0,1,2,3,4,5,6,7,8,9,10,11];
 const RCHAR='23456789TJQKA';
-const SUIT='♠♥♦♣';
+const SUIT='\u2660\u2665\u2666\u2663';
 const SCLS=[1,0,0,1];
 // Colors: P1 blue, P2 red, P3 green, P4 purple, P5 orange, B1 gold, B2 cyan
 const TCOL=['#58a6ff','#f97583','#56d364','#d2a8ff','#f0883e','#e3b341','#79c0ff'];
@@ -142,11 +259,10 @@ let aT=0; // active target: 0-4 players, 5-6 boards
 let pCards=[[],[],[],[],[]]; // player hands
 let bCards=[[],[]]; // board cards (up to 5 each)
 let assign=new Int8Array(52).fill(-1); // card -> target (-1=free, 0-4=player, 5-6=board)
-let worker=null,running=false;
+let running=false;
 
 function cardName(c){return RCHAR[c>>2]+SUIT[c&3]}
 function suitCls(c){return SCLS[c&3]?'sb':'sr'}
-function cardSpan(c){return `<span class="hc"><span class="${suitCls(c)}">${cardName(c)}</span></span>`}
 
 function initBg(id,cb){
   document.getElementById(id).querySelectorAll('button').forEach(b=>{
@@ -340,7 +456,7 @@ function render(){
     if(cards.length>0){
       const xb=document.createElement('button');
       xb.className='xbtn';
-      xb.textContent='×';
+      xb.textContent='\u00d7';
       xb.addEventListener('click',e=>{e.stopPropagation();clearTarget(t);});
       cardsDiv.appendChild(xb);
     }
@@ -378,50 +494,94 @@ document.getElementById('clrBtn').addEventListener('click',()=>{
   for(let b=0;b<2;b++){bCards[b].forEach(c=>assign[c]=-1);bCards[b]=[];}
   document.getElementById('resultsArea').style.display='none';
   document.getElementById('progressArea').style.display='none';
+  document.getElementById('subscribePrompt').style.display='none';
   validate();render();
 });
 
-document.getElementById('runBtn').addEventListener('click',()=>{
-  if(running)stopSim();else startSim();
-});
+// ===== RUN SIMULATION (via server) =====
+document.getElementById('runBtn').addEventListener('click',()=>startSim());
 
-function startSim(){
-  if(worker)worker.terminate();
+async function startSim(){
+  if(running)return;
+
+  // Check auth
+  if(!idToken){
+    document.getElementById('err').textContent='Sign in with Google to use the calculator.';
+    google.accounts.id.prompt();
+    return;
+  }
+  if(!ensureValidToken()){
+    document.getElementById('err').textContent='Session expired. Please sign in again.';
+    return;
+  }
+
   running=true;
-  const btn=document.getElementById('runBtn');btn.textContent='Stop';btn.classList.add('stop');btn.disabled=false;
+  const btn=document.getElementById('runBtn');
+  btn.innerHTML='<span class="spinner"></span>Calculating\u2026';
+  btn.disabled=true;
   document.getElementById('progressArea').style.display='block';
-  document.getElementById('resultsArea').style.display='block';
-  document.getElementById('pfill').style.width='0%';
+  document.getElementById('ptxt').textContent='Running simulation on server\u2026';
+  document.getElementById('subscribePrompt').style.display='none';
+  document.getElementById('err').textContent='';
 
   const hands=[];for(let p=0;p<nP;p++)hands.push([...pCards[p]]);
-  const blob=new Blob([WORKER_CODE],{type:'application/javascript'});
-  const url=URL.createObjectURL(blob);
-  worker=new Worker(url);URL.revokeObjectURL(url);
-
   const ad=actualDraws();
-  document.getElementById('ptxt').textContent=`0 / ${nT.toLocaleString()} — draws: ${ad}, final: ${finalHandSize()} cards`;
-  worker.postMessage({
-    playerHands:hands,numPlayers:nP,startingCards:nC,
-    totalDraws:ad,numTrials:nT,
-    knownBoard1:[...bCards[0]],knownBoard2:[...bCards[1]]
-  });
-  worker.onmessage=e=>{
-    const d=e.data;
-    if(d.type==='progress'||d.type==='done'){
-      showResults(d);
-      const pct=(d.trial/nT*100).toFixed(0);
-      document.getElementById('pfill').style.width=pct+'%';
-      document.getElementById('ptxt').textContent=d.trial.toLocaleString()+' / '+nT.toLocaleString();
-    }
-    if(d.type==='done')stopSim();
-  };
-}
 
-function stopSim(){
-  running=false;
-  if(worker){worker.terminate();worker=null;}
-  const btn=document.getElementById('runBtn');btn.textContent='Run';btn.classList.remove('stop');
-  validate();
+  try{
+    const resp=await fetch('/api/solve',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'Authorization':'Bearer '+idToken
+      },
+      body:JSON.stringify({
+        playerHands:hands,
+        numPlayers:nP,
+        startingCards:nC,
+        totalDraws:ad,
+        numTrials:nT,
+        knownBoard1:[...bCards[0]],
+        knownBoard2:[...bCards[1]]
+      })
+    });
+
+    if(resp.status===401){
+      idToken=null;authUser=null;
+      localStorage.removeItem('esg_id_token');localStorage.removeItem('esg_auth_user');
+      updateAuthUI();
+      document.getElementById('err').textContent='Session expired. Please sign in again.';
+      google.accounts.id.prompt();
+      return;
+    }
+
+    if(resp.status===403){
+      isSubscribed=false;
+      localStorage.removeItem('esg_subscribed');
+      updateAuthUI();
+      document.getElementById('subscribePrompt').style.display='block';
+      return;
+    }
+
+    if(!resp.ok){
+      const err=await resp.json().catch(()=>({error:'Server error'}));
+      throw new Error(err.error||'Request failed');
+    }
+
+    const d=await resp.json();
+    isSubscribed=true;
+    localStorage.setItem('esg_subscribed','true');
+    updateAuthUI();
+    document.getElementById('resultsArea').style.display='block';
+    document.getElementById('ptxt').textContent=d.trial.toLocaleString()+' trials completed';
+    showResults(d);
+  }catch(e){
+    document.getElementById('err').textContent='Error: '+e.message;
+  }finally{
+    running=false;
+    btn.textContent='Run';
+    btn.disabled=false;
+    validate();
+  }
 }
 
 function showResults(d){
@@ -438,229 +598,15 @@ function showResults(d){
   }
 }
 
+// ===== INIT =====
+// Clear expired token on load
+if (idToken && isTokenExpired()) {
+  idToken = null;
+  localStorage.removeItem('esg_id_token');
+}
 buildGrid();render();validate();
-
-// ===== WEB WORKER CODE =====
-const WORKER_CODE=`'use strict';
-
-// --- PRNG (xorshift128+) ---
-let s0=0x12345678,s1=0x9ABCDEF0;
-function seed(a,b){s0=a|0||1;s1=b|0||2;}
-function rand(){
-  let a=s0,b=s1;s0=b;
-  a^=a<<23;a^=a>>>17;a^=b;a^=b>>>26;
-  s1=a;return(a+b)>>>0;
-}
-function randInt(n){return rand()%n;}
-
-// --- 5-card evaluator with lookup table ---
-const MULT=371294;
-const rankTable=new Int32Array(371294);
-
-function buildRankTable(){
-  for(let r0=12;r0>=0;r0--)
-  for(let r1=r0;r1>=0;r1--)
-  for(let r2=r1;r2>=0;r2--)
-  for(let r3=r2;r3>=0;r3--)
-  for(let r4=r3;r4>=0;r4--){
-    const idx=r0*28561+r1*2197+r2*169+r3*13+r4;
-    const allUq=r0>r1&&r1>r2&&r2>r3&&r3>r4;
-    if(allUq){
-      if(r0-r4===4){
-        rankTable[idx]=4*MULT+r0;
-      }else if(r0===12&&r1===3&&r2===2&&r3===1&&r4===0){
-        rankTable[idx]=4*MULT+3;
-      }else{
-        rankTable[idx]=r0*28561+r1*2197+r2*169+r3*13+r4;
-      }
-    }else{
-      const rr=[r0,r1,r2,r3,r4];
-      const gr=[];let i=0;
-      while(i<5){let j=i+1;while(j<5&&rr[j]===rr[i])j++;gr.push([rr[i],j-i]);i=j;}
-      gr.sort((a,b)=>b[1]-a[1]||b[0]-a[0]);
-      const p=gr.map(g=>g[1]).join('');
-      if(p==='5'){
-        rankTable[idx]=0;
-      }else if(p[0]==='4'){
-        rankTable[idx]=7*MULT+gr[0][0]*13+gr[1][0];
-      }else if(p==='32'){
-        rankTable[idx]=6*MULT+gr[0][0]*13+gr[1][0];
-      }else if(p==='311'){
-        rankTable[idx]=3*MULT+gr[0][0]*169+gr[1][0]*13+gr[2][0];
-      }else if(p==='221'){
-        rankTable[idx]=2*MULT+gr[0][0]*169+gr[1][0]*13+gr[2][0];
-      }else{
-        rankTable[idx]=1*MULT+gr[0][0]*2197+gr[1][0]*169+gr[2][0]*13+gr[3][0];
-      }
-    }
-  }
-}
-
-function eval5(c0,c1,c2,c3,c4){
-  let r0=c0>>2,r1=c1>>2,r2=c2>>2,r3=c3>>2,r4=c4>>2,t;
-  if(r0<r3){t=r0;r0=r3;r3=t;}
-  if(r1<r4){t=r1;r1=r4;r4=t;}
-  if(r0<r2){t=r0;r0=r2;r2=t;}
-  if(r1<r3){t=r1;r1=r3;r3=t;}
-  if(r0<r1){t=r0;r0=r1;r1=t;}
-  if(r2<r4){t=r2;r2=r4;r4=t;}
-  if(r1<r2){t=r1;r1=r2;r2=t;}
-  if(r3<r4){t=r3;r3=r4;r4=t;}
-  if(r2<r3){t=r2;r2=r3;r3=t;}
-
-  let sc=rankTable[r0*28561+r1*2197+r2*169+r3*13+r4];
-
-  if(r0>r1&&r1>r2&&r2>r3&&r3>r4){
-    const s=c0&3;
-    if(s===(c1&3)&&s===(c2&3)&&s===(c3&3)&&s===(c4&3)){
-      if(sc>=4*MULT)sc+=4*MULT;
-      else sc+=5*MULT;
-    }
-  }
-  return sc;
-}
-
-function best5(hand,n){
-  let best=0;
-  for(let a=0;a<n-4;a++)
-  for(let b=a+1;b<n-3;b++)
-  for(let c=b+1;c<n-2;c++)
-  for(let d=c+1;d<n-1;d++)
-  for(let e=d+1;e<n;e++){
-    const s=eval5(hand[a],hand[b],hand[c],hand[d],hand[e]);
-    if(s>best)best=s;
-  }
-  return best;
-}
-
-const B3=[[0,1,2],[0,1,3],[0,1,4],[0,2,3],[0,2,4],[0,3,4],[1,2,3],[1,2,4],[1,3,4],[2,3,4]];
-
-function bestPLO(hand,n,board){
-  let best=0;
-  for(let a=0;a<n-1;a++)
-  for(let b=a+1;b<n;b++){
-    const h0=hand[a],h1=hand[b];
-    for(let i=0;i<10;i++){
-      const s=eval5(h0,h1,board[B3[i][0]],board[B3[i][1]],board[B3[i][2]]);
-      if(s>best)best=s;
-    }
-  }
-  return best;
-}
-
-// --- Monte Carlo simulation ---
-buildRankTable();
-
-onmessage=function(e){
-  const{playerHands,numPlayers,startingCards,totalDraws,numTrials,knownBoard1,knownBoard2}=e.data;
-
-  const totalDrawsPerPlayer=totalDraws;
-  const fullSize=startingCards+totalDrawsPerPlayer;
-
-  const kb1=knownBoard1||[];
-  const kb2=knownBoard2||[];
-  const unknownB1=5-kb1.length;
-  const unknownB2=5-kb2.length;
-
-  seed(Date.now()^0xDEAD,(Date.now()>>>4)^0xBEEF);
-
-  // remaining deck (exclude known hands + known boards)
-  const known=new Set();
-  for(let p=0;p<numPlayers;p++)for(const c of playerHands[p])known.add(c);
-  for(const c of kb1)known.add(c);
-  for(const c of kb2)known.add(c);
-  const remaining=[];
-  for(let c=0;c<52;c++)if(!known.has(c))remaining.push(c);
-  const R=remaining.length;
-  const cardsNeeded=numPlayers*totalDrawsPerPlayer+unknownB1+unknownB2;
-
-  const pts=[];
-  const potEq=[];
-  const scoops=[];
-  for(let p=0;p<numPlayers;p++){pts.push([0,0,0]);potEq.push(0);scoops.push(0);}
-
-  const trialPts=new Float64Array(numPlayers);
-
-  const hands=[];
-  for(let p=0;p<numPlayers;p++){
-    const h=new Array(fullSize);
-    for(let i=0;i<startingCards;i++)h[i]=playerHands[p][i];
-    hands.push(h);
-  }
-  const board1=new Array(5);
-  const board2=new Array(5);
-  // pre-fill known board cards
-  for(let i=0;i<kb1.length;i++)board1[i]=kb1[i];
-  for(let i=0;i<kb2.length;i++)board2[i]=kb2[i];
-
-  const BATCH=2500;
-
-  for(let trial=0;trial<numTrials;trial++){
-    // partial Fisher-Yates
-    for(let i=0;i<cardsNeeded;i++){
-      const j=i+randInt(R-i);
-      const tmp=remaining[i];remaining[i]=remaining[j];remaining[j]=tmp;
-    }
-
-    let idx=0;
-    for(let p=0;p<numPlayers;p++)
-      for(let d=0;d<totalDrawsPerPlayer;d++)
-        hands[p][startingCards+d]=remaining[idx++];
-
-    for(let i=kb1.length;i<5;i++)board1[i]=remaining[idx++];
-    for(let i=kb2.length;i<5;i++)board2[i]=remaining[idx++];
-
-    let bestSc0=-1,bestSc1=-1,bestSc2=-1;
-    const sc0=new Array(numPlayers);
-    const sc1=new Array(numPlayers);
-    const sc2=new Array(numPlayers);
-
-    for(let p=0;p<numPlayers;p++){
-      const h=hands[p];
-      sc0[p]=bestPLO(h,fullSize,board1);
-      sc1[p]=bestPLO(h,fullSize,board2);
-      sc2[p]=best5(h,fullSize);
-      if(sc0[p]>bestSc0)bestSc0=sc0[p];
-      if(sc1[p]>bestSc1)bestSc1=sc1[p];
-      if(sc2[p]>bestSc2)bestSc2=sc2[p];
-    }
-
-    for(let p=0;p<numPlayers;p++)trialPts[p]=0;
-    for(let comp=0;comp<3;comp++){
-      const best=comp===0?bestSc0:comp===1?bestSc1:bestSc2;
-      const sc=comp===0?sc0:comp===1?sc1:sc2;
-      let winners=0;
-      for(let p=0;p<numPlayers;p++)if(sc[p]===best)winners++;
-      const share=1/winners;
-      for(let p=0;p<numPlayers;p++)if(sc[p]===best){
-        pts[p][comp]+=share;
-        trialPts[p]+=share;
-      }
-    }
-
-    let maxPts=-1;
-    for(let p=0;p<numPlayers;p++)if(trialPts[p]>maxPts)maxPts=trialPts[p];
-    let potWinners=0;
-    for(let p=0;p<numPlayers;p++)if(trialPts[p]===maxPts)potWinners++;
-    const potShare=1/potWinners;
-    for(let p=0;p<numPlayers;p++)if(trialPts[p]===maxPts){
-      potEq[p]+=potShare;
-      if(potWinners===1)scoops[p]+=1;
-    }
-
-    if((trial+1)%BATCH===0||trial===numTrials-1){
-      postMessage({
-        type:trial===numTrials-1?'done':'progress',
-        trial:trial+1,
-        numPlayers,
-        points:pts.map(a=>[...a]),
-        potEq:[...potEq],
-        scoops:[...scoops]
-      });
-    }
-  }
-};
-`;
+updateAuthUI();
+checkPaidReturn();
 </script>
 </body>
 </html>
