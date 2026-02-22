@@ -7,18 +7,19 @@ const stripe = process.env.STRIPE_SECRET_KEY
 async function checkSubscription(email) {
   if (!stripe) throw new Error('STRIPE_SECRET_KEY not configured');
 
-  const customers = await stripe.customers.list({ email, limit: 1 });
+  const customers = await stripe.customers.list({ email, limit: 10 });
   if (customers.data.length === 0) return false;
 
-  const customer = customers.data[0];
-  const subscriptions = await stripe.subscriptions.list({
-    customer: customer.id,
-    status: 'active',
-    price: process.env.STRIPE_PRICE_ID,
-    limit: 1,
-  });
-
-  return subscriptions.data.length > 0;
+  for (const customer of customers.data) {
+    const subscriptions = await stripe.subscriptions.list({
+      customer: customer.id,
+      status: 'active',
+      price: process.env.STRIPE_PRICE_ID,
+      limit: 1,
+    });
+    if (subscriptions.data.length > 0) return true;
+  }
+  return false;
 }
 
 module.exports = { checkSubscription };
