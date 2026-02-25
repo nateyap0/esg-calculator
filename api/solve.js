@@ -3,15 +3,8 @@
 
 'use strict';
 
-// --- PRNG (xorshift128+) ---
-let s0 = 0x12345678, s1 = 0x9ABCDEF0;
-function seed(a, b) { s0 = a | 0 || 1; s1 = b | 0 || 2; }
-function rand() {
-  let a = s0, b = s1; s0 = b;
-  a ^= a << 23; a ^= a >>> 17; a ^= b; a ^= b >>> 26;
-  s1 = a; return (a + b) >>> 0;
-}
-function randInt(n) { return rand() % n; }
+// --- PRNG ---
+function randInt(n) { return (Math.random() * n) | 0; }
 
 // --- 5-card evaluator with lookup table ---
 const MULT = 371294;
@@ -121,7 +114,6 @@ function runSimulation({ playerHands, numPlayers, startingCards, totalDraws, num
   const unknownB1 = 5 - kb1.length;
   const unknownB2 = 5 - kb2.length;
 
-  seed(Date.now() ^ 0xDEAD, (Date.now() >>> 4) ^ 0xBEEF);
 
   // remaining deck (exclude known hands + known boards)
   const known = new Set();
